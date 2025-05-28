@@ -226,6 +226,7 @@ class CadastroAlunoPage extends StatelessWidget {
                               ElevatedButton(
                                 onPressed: () {
                                   // Ação do botão "Saiba Mais"
+                                  //novo comit//
                                 },
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.white,
