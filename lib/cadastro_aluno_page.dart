@@ -1,33 +1,33 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/app_widget.dart';
 
-void main() {
-  runApp(AppWidget());
-}
-
-class LoginPage extends StatelessWidget {
+class CadastroAlunoPage extends StatelessWidget {
+  final TextEditingController nomeController = TextEditingController();
+  final TextEditingController idadeController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
-  final TextEditingController senhaController = TextEditingController();
-
-  LoginPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
         children: [
+          // Fundo com imagem de fundo (para refletir o design do exemplo)
           Container(
             decoration: BoxDecoration(
               image: DecorationImage(
-                image: AssetImage('assets/images/fundosite.png'),
+                image: AssetImage(
+                  'assets/images/fundosite.png',
+                ), // Substitua pelo seu fundo
                 fit: BoxFit.cover,
-                colorFilter: ColorFilter.mode(Colors.blue, BlendMode.darken),
+                colorFilter: ColorFilter.mode(
+                  Colors.blue.withOpacity(0.6),
+                  BlendMode.darken,
+                ),
               ),
             ),
           ),
 
-          // Imagem de nayara direita
+          // Imagem do lado direito
           Positioned(
             right: 0,
             top: 0,
@@ -36,7 +36,9 @@ class LoginPage extends StatelessWidget {
               width: MediaQuery.of(context).size.width * 0.4,
               decoration: BoxDecoration(
                 image: DecorationImage(
-                  image: AssetImage('assets/images/fotologin.png'),
+                  image: AssetImage(
+                    'assets/images/fotologin.png',
+                  ), // Substitua pela imagem desejada
                   fit: BoxFit.cover,
                   alignment: Alignment.center,
                 ),
@@ -44,6 +46,7 @@ class LoginPage extends StatelessWidget {
             ),
           ),
 
+          // Formulário
           SingleChildScrollView(
             padding: EdgeInsets.symmetric(horizontal: 30, vertical: 60),
             child: Center(
@@ -52,15 +55,30 @@ class LoginPage extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    // Logo da escola
+                    // Botão de Voltar
+                    Align(
+                      alignment: Alignment.topLeft,
+                      child: IconButton(
+                        icon: Icon(
+                          Icons.arrow_back,
+                          color: Colors.white,
+                          size: 30,
+                        ),
+                        onPressed: () {
+                          Navigator.pop(context); // Voltar para a tela anterior
+                        },
+                      ),
+                    ),
+
+                    // Logo
                     Image.asset(
-                      'assets/images/logosite.png',
+                      'assets/images/logosite.png', // Substitua pelo logo
                       width: 500,
                       fit: BoxFit.contain,
                     ),
                     SizedBox(height: 20),
 
-                    // Frase
+                    // Frase de impacto
                     Text(
                       'Comunicar é incluir.',
                       style: TextStyle(
@@ -72,7 +90,38 @@ class LoginPage extends StatelessWidget {
                     ),
                     SizedBox(height: 40),
 
-                    // Campo email
+                    // Campo Nome
+                    TextField(
+                      controller: nomeController,
+                      decoration: InputDecoration(
+                        hintText: 'Nome Completo',
+                        filled: true,
+                        fillColor: Colors.white.withOpacity(0.9),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        prefixIcon: Icon(Icons.person),
+                      ),
+                    ),
+                    SizedBox(height: 20),
+
+                    // Campo Idade
+                    TextField(
+                      controller: idadeController,
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                        hintText: 'Idade',
+                        filled: true,
+                        fillColor: Colors.white.withOpacity(0.9),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        prefixIcon: Icon(Icons.calendar_today),
+                      ),
+                    ),
+                    SizedBox(height: 20),
+
+                    // Campo Email
                     TextField(
                       controller: emailController,
                       decoration: InputDecoration(
@@ -85,50 +134,38 @@ class LoginPage extends StatelessWidget {
                         prefixIcon: Icon(Icons.email),
                       ),
                     ),
-                    SizedBox(height: 20),
+                    SizedBox(height: 30),
 
-                    // Campo Senha
-                    TextField(
-                      controller: senhaController,
-                      obscureText: true,
-                      decoration: InputDecoration(
-                        hintText: 'Senha',
-                        filled: true,
-                        fillColor: Colors.white.withOpacity(0.9),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
+                    // Botão Cadastrar
+                    SizedBox(
+                      width: 200,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          // Ação para cadastrar o aluno (salvar no banco ou API)
+                          print('Nome: ${nomeController.text}');
+                          print('Idade: ${idadeController.text}');
+                          print('Email: ${emailController.text}');
+                        },
+                        style: ElevatedButton.styleFrom(
+                          padding: EdgeInsets.symmetric(vertical: 15),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          backgroundColor: Colors.blue[800],
                         ),
-                        prefixIcon: Icon(Icons.lock),
+                        child: Text(
+                          'Cadastrar Aluno',
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
                     ),
                     SizedBox(height: 30),
 
-                    // Botão Entrar branco com texto azul
-                    ElevatedButton(
-                      onPressed: () {
-                        // ação do botão Entrar
-                      },
-                      style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 50,
-                          vertical: 15,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        backgroundColor: Colors.white,
-                      ),
-                      child: Text(
-                        'Entrar',
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: Colors.blue[800],
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 50),
-
+                    // Seção Sobre o Curso
                     ClipRRect(
                       borderRadius: BorderRadius.circular(20),
                       child: BackdropFilter(
@@ -177,7 +214,7 @@ class LoginPage extends StatelessWidget {
                               ),
                               SizedBox(height: 15),
                               Text(
-                                '🕒 Duração: 3 meses\n🎓 Nível: Iniciante\n👥 Público-alvo: Qualquer pessoa interessada em inclusão',
+                                '🕒 Duração: 6 meses/módulo\n🎓 Nível: A partir do Iniciante\n👥 Público-alvo: Qualquer pessoa interessada em inclusão',
                                 style: TextStyle(
                                   fontSize: 14,
                                   color: Colors.white60,
@@ -186,9 +223,11 @@ class LoginPage extends StatelessWidget {
                               ),
                               SizedBox(height: 20),
 
-                              // Botão Saiba Mais
                               ElevatedButton(
-                                onPressed: () {},
+                                onPressed: () {
+                                  // Ação do botão "Saiba Mais"
+                                  //novo comit//
+                                },
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.white,
                                   padding: EdgeInsets.symmetric(

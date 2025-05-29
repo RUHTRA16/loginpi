@@ -1,28 +1,25 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/app_widget.dart';
-
-void main() {
-  runApp(AppWidget());
-}
 
 class LoginPage extends StatelessWidget {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController senhaController = TextEditingController();
-
-  LoginPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
         children: [
+          // Fundo com sinais de libras
           Container(
             decoration: BoxDecoration(
               image: DecorationImage(
                 image: AssetImage('assets/images/fundosite.png'),
                 fit: BoxFit.cover,
-                colorFilter: ColorFilter.mode(Colors.blue, BlendMode.darken),
+                colorFilter: ColorFilter.mode(
+                  Colors.blue.withOpacity(0.6),
+                  BlendMode.darken,
+                ),
               ),
             ),
           ),
@@ -103,32 +100,60 @@ class LoginPage extends StatelessWidget {
                     ),
                     SizedBox(height: 30),
 
-                    // Botão Entrar branco com texto azul
-                    ElevatedButton(
-                      onPressed: () {
-                        // ação do botão Entrar
-                      },
-                      style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 50,
-                          vertical: 15,
+                    // Botão Entrar
+                    SizedBox(
+                      width: 200,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          // Ação do botão Entrar
+                        },
+                        style: ElevatedButton.styleFrom(
+                          padding: EdgeInsets.symmetric(vertical: 15),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          backgroundColor: Colors.white,
                         ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        backgroundColor: Colors.white,
-                      ),
-                      child: Text(
-                        'Entrar',
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: Colors.blue[800],
-                          fontWeight: FontWeight.bold,
+                        child: Text(
+                          'Entrar',
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: Colors.blue[800],
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ),
-                    SizedBox(height: 50),
+                    SizedBox(height: 20),
 
+                    // Botão Cadastrar
+                    SizedBox(
+                      width: 200,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          // Navega para a página de cadastro
+                          Navigator.pushNamed(context, '/cadastro');
+                        },
+                        style: ElevatedButton.styleFrom(
+                          padding: EdgeInsets.symmetric(vertical: 15),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          backgroundColor: Colors.blue[800],
+                        ),
+                        child: Text(
+                          'Cadastrar',
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 30),
+
+                    // Seção Sobre o Curso
                     ClipRRect(
                       borderRadius: BorderRadius.circular(20),
                       child: BackdropFilter(
@@ -177,7 +202,7 @@ class LoginPage extends StatelessWidget {
                               ),
                               SizedBox(height: 15),
                               Text(
-                                '🕒 Duração: 3 meses\n🎓 Nível: Iniciante\n👥 Público-alvo: Qualquer pessoa interessada em inclusão',
+                                '🕒 Duração: 6 meses/módulo\n🎓 Nível: A partir do Iniciante\n👥 Público-alvo: Qualquer pessoa interessada em inclusão',
                                 style: TextStyle(
                                   fontSize: 14,
                                   color: Colors.white60,
@@ -186,9 +211,10 @@ class LoginPage extends StatelessWidget {
                               ),
                               SizedBox(height: 20),
 
-                              // Botão Saiba Mais
                               ElevatedButton(
-                                onPressed: () {},
+                                onPressed: () {
+                                  // ação do botão Saiba Mais
+                                },
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.white,
                                   padding: EdgeInsets.symmetric(

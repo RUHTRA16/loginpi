@@ -1,28 +1,27 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/app_widget.dart';
 
-void main() {
-  runApp(AppWidget());
-}
-
-class LoginPage extends StatelessWidget {
+class CadastroPage extends StatelessWidget {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController senhaController = TextEditingController();
-
-  LoginPage({super.key});
+  final TextEditingController confirmarSenhaController =
+      TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
         children: [
+          // Fundo com sinais de libras
           Container(
             decoration: BoxDecoration(
               image: DecorationImage(
                 image: AssetImage('assets/images/fundosite.png'),
                 fit: BoxFit.cover,
-                colorFilter: ColorFilter.mode(Colors.blue, BlendMode.darken),
+                colorFilter: ColorFilter.mode(
+                  Colors.blue.withOpacity(0.6),
+                  BlendMode.darken,
+                ),
               ),
             ),
           ),
@@ -52,6 +51,21 @@ class LoginPage extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
+                    // Botão de Voltar (no topo)
+                    Align(
+                      alignment: Alignment.topLeft,
+                      child: IconButton(
+                        icon: Icon(
+                          Icons.arrow_back,
+                          color: Colors.white,
+                          size: 30,
+                        ),
+                        onPressed: () {
+                          // Volta para a tela de Login
+                          Navigator.pop(context);
+                        },
+                      ),
+                    ),
                     // Logo da escola
                     Image.asset(
                       'assets/images/logosite.png',
@@ -101,34 +115,51 @@ class LoginPage extends StatelessWidget {
                         prefixIcon: Icon(Icons.lock),
                       ),
                     ),
-                    SizedBox(height: 30),
+                    SizedBox(height: 20),
 
-                    // Botão Entrar branco com texto azul
-                    ElevatedButton(
-                      onPressed: () {
-                        // ação do botão Entrar
-                      },
-                      style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 50,
-                          vertical: 15,
-                        ),
-                        shape: RoundedRectangleBorder(
+                    // Campo Confirmar Senha
+                    TextField(
+                      controller: confirmarSenhaController,
+                      obscureText: true,
+                      decoration: InputDecoration(
+                        hintText: 'Confirmar Senha',
+                        filled: true,
+                        fillColor: Colors.white.withOpacity(0.9),
+                        border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        backgroundColor: Colors.white,
+                        prefixIcon: Icon(Icons.lock),
                       ),
-                      child: Text(
-                        'Entrar',
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: Colors.blue[800],
-                          fontWeight: FontWeight.bold,
+                    ),
+                    SizedBox(height: 30),
+
+                    // Botão Cadastrar
+                    SizedBox(
+                      width: 200,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          // Ação do botão Cadastrar
+                        },
+                        style: ElevatedButton.styleFrom(
+                          padding: EdgeInsets.symmetric(vertical: 15),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          backgroundColor: Colors.blue[800],
+                        ),
+                        child: Text(
+                          'Cadastrar',
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ),
-                    SizedBox(height: 50),
+                    SizedBox(height: 30),
 
+                    // Seção Sobre o Curso
                     ClipRRect(
                       borderRadius: BorderRadius.circular(20),
                       child: BackdropFilter(
@@ -177,7 +208,7 @@ class LoginPage extends StatelessWidget {
                               ),
                               SizedBox(height: 15),
                               Text(
-                                '🕒 Duração: 3 meses\n🎓 Nível: Iniciante\n👥 Público-alvo: Qualquer pessoa interessada em inclusão',
+                                '🕒 Duração: 6 meses/módulo\n🎓 Nível: A partir do Iniciante\n👥 Público-alvo: Qualquer pessoa interessada em inclusão',
                                 style: TextStyle(
                                   fontSize: 14,
                                   color: Colors.white60,
@@ -186,9 +217,10 @@ class LoginPage extends StatelessWidget {
                               ),
                               SizedBox(height: 20),
 
-                              // Botão Saiba Mais
                               ElevatedButton(
-                                onPressed: () {},
+                                onPressed: () {
+                                  // ação do botão Saiba Mais
+                                },
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.white,
                                   padding: EdgeInsets.symmetric(
