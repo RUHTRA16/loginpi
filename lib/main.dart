@@ -26,7 +26,6 @@ class LoginPage extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: [
-          // Fundo com sinais de libras
           Container(
             decoration: BoxDecoration(
               image: DecorationImage(
@@ -116,11 +115,9 @@ class LoginPage extends StatelessWidget {
                     ),
                     SizedBox(height: 30),
 
-                    // Botão Entrar branco com texto azul
+                    // Botão Entrar
                     ElevatedButton(
-                      onPressed: () {
-                        // ação do botão Entrar
-                      },
+                      onPressed: () {},
                       style: ElevatedButton.styleFrom(
                         padding: EdgeInsets.symmetric(
                           horizontal: 50,
@@ -142,7 +139,6 @@ class LoginPage extends StatelessWidget {
                     ),
                     SizedBox(height: 50),
 
-                    // Seção Sobre o Curso com efeito sofisticado
                     ClipRRect(
                       borderRadius: BorderRadius.circular(20),
                       child: BackdropFilter(
@@ -200,11 +196,9 @@ class LoginPage extends StatelessWidget {
                               ),
                               SizedBox(height: 20),
 
-                              // Botão Saiba Mais branco com texto azul
+                              // Botão Saiba Mais
                               ElevatedButton(
-                                onPressed: () {
-                                  // ação do botão Saiba Mais
-                                },
+                                onPressed: () {},
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.white,
                                   padding: EdgeInsets.symmetric(
