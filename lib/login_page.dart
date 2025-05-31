@@ -1,9 +1,13 @@
+// ignore_for_file: deprecated_member_use
+
 import 'dart:ui';
 import 'package:flutter/material.dart';
 
 class LoginPage extends StatelessWidget {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController senhaController = TextEditingController();
+
+  LoginPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -105,6 +109,10 @@ class LoginPage extends StatelessWidget {
                       width: 200,
                       child: ElevatedButton(
                         onPressed: () {
+                          if (emailController.value.text == 'admin' &&
+                              senhaController.value.text == 'admin') {
+                            Navigator.pushNamed(context, '/homepage');
+                          }
                           // Ação do botão Entrar
                         },
                         style: ElevatedButton.styleFrom(

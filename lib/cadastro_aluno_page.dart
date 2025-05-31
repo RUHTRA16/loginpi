@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'dart:ui';
 import 'package:flutter/material.dart';
 
@@ -5,6 +7,8 @@ class CadastroAlunoPage extends StatelessWidget {
   final TextEditingController nomeController = TextEditingController();
   final TextEditingController idadeController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
+
+  CadastroAlunoPage({super.key});
 
   @override
   Widget build(BuildContext context) {
