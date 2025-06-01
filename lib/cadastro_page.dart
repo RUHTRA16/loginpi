@@ -63,8 +63,7 @@ class CadastroPage extends StatelessWidget {
                           size: 30,
                         ),
                         onPressed: () {
-                          // Volta para a tela de Login
-                          Navigator.pop(context);
+                          Navigator.pop(context); // Volta para a tela anterior
                         },
                       ),
                     ),
@@ -135,12 +134,24 @@ class CadastroPage extends StatelessWidget {
                     ),
                     SizedBox(height: 30),
 
-                    // Botão Cadastrar
+                    // Botão Cadastrar com navegação
                     SizedBox(
                       width: 200,
                       child: ElevatedButton(
                         onPressed: () {
-                          // Ação do botão Cadastrar
+                          if (senhaController.text ==
+                              confirmarSenhaController.text) {
+                            // Sucesso! Vai para a home
+                            Navigator.pushNamed(context, '/homepage');
+                          } else {
+                            // Senhas diferentes
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('As senhas não coincidem.'),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          }
                         },
                         style: ElevatedButton.styleFrom(
                           padding: EdgeInsets.symmetric(vertical: 15),
@@ -218,7 +229,6 @@ class CadastroPage extends StatelessWidget {
                                 textAlign: TextAlign.center,
                               ),
                               SizedBox(height: 20),
-
                               ElevatedButton(
                                 onPressed: () {
                                   // ação do botão Saiba Mais
