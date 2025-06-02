@@ -13,6 +13,7 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: [
+          // Imagem de fundo
           Positioned.fill(
             child: Image.asset(
               'assets/images/fundosite.png',
@@ -21,94 +22,101 @@ class HomePage extends StatelessWidget {
           ),
           Center(
             child: SingleChildScrollView(
-              child: Container(
-                padding: EdgeInsets.all(12),
-                width: MediaQuery.of(context).size.width * 0.85,
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.9),
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black26,
-                      blurRadius: 6,
-                      offset: Offset(0, 3),
+              padding: EdgeInsets.all(12),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: MediaQuery.of(context).size.width * 0.85,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.9),
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black26,
+                          blurRadius: 6,
+                          offset: Offset(0, 3),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      'Bem-vindo ao Sistema do Curso de Libras Nayara Souza',
-                      style: TextStyle(
-                        fontSize: 25,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.blue[800],
-                      ),
-                      textAlign: TextAlign.center,
+                    padding: EdgeInsets.all(16),
+                    child: Column(
+                      children: [
+                        Text(
+                          'Bem-vindo ao Sistema do Curso de Libras Nayara Souza',
+                          style: TextStyle(
+                            fontSize: 25,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.blue[800],
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        SizedBox(height: 16),
+                        GridView.count(
+                          crossAxisCount: 4,
+                          shrinkWrap: true,
+                          physics: NeverScrollableScrollPhysics(),
+                          crossAxisSpacing: 6,
+                          mainAxisSpacing: 6,
+                          childAspectRatio: 1.5,
+                          children:
+                              acessoItems.map((item) {
+                                return GestureDetector(
+                                  onTap: () {
+                                    if (item.label == 'Sair') {
+                                      Navigator.pushNamedAndRemoveUntil(
+                                        context,
+                                        item.route,
+                                        (route) => false,
+                                      );
+                                    } else {
+                                      Navigator.pushNamed(context, item.route);
+                                    }
+                                  },
+                                  child: Container(
+                                    padding: EdgeInsets.all(8),
+                                    decoration: BoxDecoration(
+                                      color: Colors.blue[50],
+                                      borderRadius: BorderRadius.circular(6),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black12,
+                                          blurRadius: 1,
+                                          offset: Offset(0, 1),
+                                        ),
+                                      ],
+                                    ),
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Icon(
+                                          item.icon,
+                                          size: 30,
+                                          color: Colors.blue[800],
+                                        ),
+                                        SizedBox(height: 3),
+                                        Text(
+                                          item.label,
+                                          style: TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.w600,
+                                            color: Colors.blue[800],
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              }).toList(),
+                        ),
+                      ],
                     ),
-                    SizedBox(height: 16),
-                    GridView.count(
-                      crossAxisCount: 4,
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      crossAxisSpacing: 6,
-                      mainAxisSpacing: 6,
-                      childAspectRatio: 1.5,
-                      children:
-                          acessoItems.map((item) {
-                            return GestureDetector(
-                              onTap: () {
-                                if (item.label == 'Sair') {
-                                  // Volta para login removendo histórico de telas
-                                  Navigator.pushNamedAndRemoveUntil(
-                                    context,
-                                    item.route,
-                                    (route) => false,
-                                  );
-                                } else {
-                                  Navigator.pushNamed(context, item.route);
-                                }
-                              },
-                              child: Container(
-                                padding: EdgeInsets.all(2),
-                                decoration: BoxDecoration(
-                                  color: Colors.blue[50],
-                                  borderRadius: BorderRadius.circular(6),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black12,
-                                      blurRadius: 1,
-                                      offset: Offset(0, 1),
-                                    ),
-                                  ],
-                                ),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(
-                                      item.icon,
-                                      size: 30,
-                                      color: Colors.blue[800],
-                                    ),
-                                    SizedBox(height: 3),
-                                    Text(
-                                      item.label,
-                                      style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.w600,
-                                        color: Colors.blue[800],
-                                      ),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            );
-                          }).toList(),
-                    ),
-                  ],
-                ),
+                  ),
+                  SizedBox(height: 30),
+                  // Segundo Container com botões
+                ],
               ),
             ),
           ),
