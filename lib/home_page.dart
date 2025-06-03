@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class HomePage extends StatelessWidget {
   final List<_AcessoItem> acessoItems = [
     _AcessoItem('Alunos', Icons.people, '/abaalunopage'),
-    _AcessoItem('Frequência', Icons.calendar_today, '/frequencia'),
+    _AcessoItem('Frequência', Icons.calendar_today, '/avaliacao'),
     _AcessoItem('Relatórios', Icons.bar_chart, '/relatorios'),
     _AcessoItem('Sair', Icons.exit_to_app, '/login'), // nova opção sair
   ];
@@ -114,8 +114,6 @@ class HomePage extends StatelessWidget {
                       ],
                     ),
                   ),
-                  SizedBox(height: 30),
-                  // Segundo Container com botões
                 ],
               ),
             ),

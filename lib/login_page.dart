@@ -133,35 +133,6 @@ class LoginPage extends StatelessWidget {
                       ),
                     ),
                     SizedBox(height: 20),
-
-                    // Botão Cadastrar
-                    SizedBox(
-                      width: 200,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          // Navega para a página de cadastro
-                          Navigator.pushNamed(context, '/cadastro');
-                        },
-                        style: ElevatedButton.styleFrom(
-                          padding: EdgeInsets.symmetric(vertical: 15),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          backgroundColor: Colors.blue[800],
-                        ),
-                        child: Text(
-                          'Cadastrar',
-                          style: TextStyle(
-                            fontSize: 18,
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 30),
-
-                    // Seção Sobre o Curso
                     ClipRRect(
                       borderRadius: BorderRadius.circular(20),
                       child: BackdropFilter(

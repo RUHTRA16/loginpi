@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/abaaluno_page.dart';
+import 'package:flutter_application_1/abafrequencia_page.dart';
 import 'package:flutter_application_1/cadastro_aluno_page.dart';
-import 'package:flutter_application_1/cadastro_page.dart';
 import 'package:flutter_application_1/home_page.dart';
 import 'package:flutter_application_1/login_page.dart';
 import 'package:flutter_application_1/ver_alunos_page.dart';
@@ -20,7 +20,7 @@ class AppWidget extends StatelessWidget {
         '/homepage': (context) => HomePage(),
         '/veralunos': (context) => VerAlunosPage(),
         '/abaalunopage': (context) => AlunosPage(),
-        '/cadastrar': (context) => CadastroPage(),
+        '/avaliacao': (context) => const AvaliacaoPage(), // nova rotaova rota
       },
     );
   }
