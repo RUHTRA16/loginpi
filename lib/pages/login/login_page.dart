@@ -1,20 +1,77 @@
-// ignore_for_file: deprecated_member_use
-
-import 'dart:ui';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'dart:ui';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
+
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  final _formKey = GlobalKey<FormState>(); // chave do formulário
   final TextEditingController emailController = TextEditingController();
   final TextEditingController senhaController = TextEditingController();
+  bool loading = false;
 
-  LoginPage({super.key});
+  Future<void> fazerLogin() async {
+    if (!_formKey.currentState!.validate())
+      return; // valida antes de tentar login
+
+    final dio = Dio();
+    setState(() => loading = true);
+
+    try {
+      final response = await dio.post(
+        'http://127.0.0.1:8001/api/login', // troque pelo endereço real da API Laravel
+        data: {
+          'email': emailController.text.trim(),
+          'password': senhaController.text.trim(),
+        },
+        options: Options(headers: {'Accept': 'application/json'}),
+      );
+
+      if (response.statusCode == 200) {
+        final token = response.data['token'];
+
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('token', token);
+
+        Navigator.pushReplacementNamed(context, '/homepage');
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Erro ao fazer login. Tente novamente.')),
+        );
+      }
+    } on DioException catch (e) {
+      String msg = 'Erro inesperado';
+
+      if (e.response != null) {
+        if (e.response?.statusCode == 401) {
+          msg = 'Email ou senha inválidos';
+        } else if (e.response?.statusCode == 422) {
+          msg = 'Por favor, preencha os campos corretamente';
+        } else {
+          msg = 'Erro: ${e.response?.statusMessage}';
+        }
+      } else {
+        msg = 'Sem conexão com o servidor';
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+    } finally {
+      setState(() => loading = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
         children: [
-          // Fundo com sinais de libras
+          // Fundo com imagem e filtro azul escuro
           Container(
             decoration: BoxDecoration(
               image: DecorationImage(
@@ -27,8 +84,7 @@ class LoginPage extends StatelessWidget {
               ),
             ),
           ),
-
-          // Imagem de nayara direita
+          // Imagem lateral direita
           Positioned(
             right: 0,
             top: 0,
@@ -39,12 +95,11 @@ class LoginPage extends StatelessWidget {
                 image: DecorationImage(
                   image: AssetImage('assets/images/fotologin.png'),
                   fit: BoxFit.cover,
-                  alignment: Alignment.center,
                 ),
               ),
             ),
           ),
-
+          // Conteúdo do formulário
           SingleChildScrollView(
             padding: EdgeInsets.symmetric(horizontal: 30, vertical: 60),
             child: Center(
@@ -53,15 +108,8 @@ class LoginPage extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    // Logo da escola
-                    Image.asset(
-                      'assets/images/logosite.png',
-                      width: 500,
-                      fit: BoxFit.contain,
-                    ),
+                    Image.asset('assets/images/logosite.png', width: 500),
                     SizedBox(height: 20),
-
-                    // Frase
                     Text(
                       'Comunicar é incluir.',
                       style: TextStyle(
@@ -73,66 +121,92 @@ class LoginPage extends StatelessWidget {
                     ),
                     SizedBox(height: 40),
 
-                    // Campo email
-                    TextField(
-                      controller: emailController,
-                      decoration: InputDecoration(
-                        hintText: 'Email',
-                        filled: true,
-                        fillColor: Colors.white.withOpacity(0.9),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        prefixIcon: Icon(Icons.email),
+                    // Formulário com validação
+                    Form(
+                      key: _formKey,
+                      child: Column(
+                        children: [
+                          TextFormField(
+                            controller: emailController,
+                            decoration: InputDecoration(
+                              hintText: 'Email',
+                              filled: true,
+                              fillColor: Colors.white.withOpacity(0.9),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              prefixIcon: Icon(Icons.email),
+                            ),
+                            validator: (email) {
+                              if (email == null || email.isEmpty) {
+                                return 'Digite seu email';
+                              }
+                              // validação simples de email
+                              if (!RegExp(
+                                r'^[^@]+@[^@]+\.[^@]+',
+                              ).hasMatch(email)) {
+                                return 'Digite um email válido';
+                              }
+                              return null;
+                            },
+                          ),
+                          SizedBox(height: 20),
+                          TextFormField(
+                            controller: senhaController,
+                            obscureText: true,
+                            decoration: InputDecoration(
+                              hintText: 'Senha',
+                              filled: true,
+                              fillColor: Colors.white.withOpacity(0.9),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              prefixIcon: Icon(Icons.lock),
+                            ),
+                            validator: (senha) {
+                              if (senha == null || senha.isEmpty) {
+                                return 'Digite sua senha';
+                              }
+                              if (senha.length < 4) {
+                                return 'Sua senha deve ter pelo menos 4 caracteres';
+                              }
+                              return null;
+                            },
+                          ),
+                        ],
                       ),
                     ),
-                    SizedBox(height: 20),
 
-                    // Campo Senha
-                    TextField(
-                      controller: senhaController,
-                      obscureText: true,
-                      decoration: InputDecoration(
-                        hintText: 'Senha',
-                        filled: true,
-                        fillColor: Colors.white.withOpacity(0.9),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        prefixIcon: Icon(Icons.lock),
-                      ),
-                    ),
                     SizedBox(height: 30),
 
-                    // Botão Entrar
-                    SizedBox(
-                      width: 200,
+                    AnimatedContainer(
+                      duration: Duration(milliseconds: 300),
+                      width: loading ? 50 : 200,
+                      height: 50,
                       child: ElevatedButton(
-                        onPressed: () {
-                          if (emailController.value.text == 'admin' &&
-                              senhaController.value.text == 'admin') {
-                            Navigator.pushNamed(context, '/homepage');
-                          }
-                          // Ação do botão Entrar
-                        },
+                        onPressed: loading ? null : fazerLogin,
                         style: ElevatedButton.styleFrom(
-                          padding: EdgeInsets.symmetric(vertical: 15),
+                          backgroundColor: Colors.white,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          backgroundColor: Colors.white,
                         ),
-                        child: Text(
-                          'Entrar',
-                          style: TextStyle(
-                            fontSize: 18,
-                            color: Colors.blue[800],
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                        child:
+                            loading
+                                ? CircularProgressIndicator(color: Colors.blue)
+                                : Text(
+                                  'Entrar',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    color: Colors.blue[800],
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
                       ),
                     ),
-                    SizedBox(height: 20),
+
+                    SizedBox(height: 50),
+
                     ClipRRect(
                       borderRadius: BorderRadius.circular(20),
                       child: BackdropFilter(
@@ -189,11 +263,8 @@ class LoginPage extends StatelessWidget {
                                 textAlign: TextAlign.center,
                               ),
                               SizedBox(height: 20),
-
                               ElevatedButton(
-                                onPressed: () {
-                                  // ação do botão Saiba Mais
-                                },
+                                onPressed: () {},
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.white,
                                   padding: EdgeInsets.symmetric(
@@ -218,7 +289,6 @@ class LoginPage extends StatelessWidget {
                         ),
                       ),
                     ),
-                    SizedBox(height: 50),
                   ],
                 ),
               ),

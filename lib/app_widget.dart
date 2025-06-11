@@ -3,7 +3,7 @@ import 'package:flutter_application_1/abaaluno_page.dart';
 import 'package:flutter_application_1/abafrequencia_page.dart';
 import 'package:flutter_application_1/cadastro_aluno_page.dart';
 import 'package:flutter_application_1/home_page.dart';
-import 'package:flutter_application_1/login_page.dart';
+import 'package:flutter_application_1/pages/login/login_page.dart';
 import 'package:flutter_application_1/ver_alunos_page.dart';
 
 class AppWidget extends StatelessWidget {
