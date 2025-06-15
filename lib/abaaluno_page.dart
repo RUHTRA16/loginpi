@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 class AlunosPage extends StatelessWidget {
   final List<_OpcaoItem> opcaoItems = [
-    _OpcaoItem('Cadastro de Alunos', Icons.person_add, '/cadastro'),
     _OpcaoItem('Ver Alunos', Icons.people, '/veralunos'),
   ];
 

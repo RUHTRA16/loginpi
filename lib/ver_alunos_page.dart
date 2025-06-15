@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:dio/dio.dart';
 
 class VerAlunosPage extends StatefulWidget {
   @override
@@ -6,23 +7,51 @@ class VerAlunosPage extends StatefulWidget {
 }
 
 class _VerAlunosPageState extends State<VerAlunosPage> {
-  List<Map<String, String>> alunos = [
-    {'nome': 'João Silva', 'idade': '20', 'email': 'joao@example.com'},
-    {'nome': 'Maria Oliveira', 'idade': '22', 'email': 'maria@example.com'},
-    {'nome': 'Carlos Souza', 'idade': '21', 'email': 'carlos@example.com'},
-  ];
+  final Dio dio = Dio(
+    BaseOptions(
+      baseUrl: 'http://127.0.0.1:8001/api', // Ajuste para seu ambiente
+      headers: {
+        'Authorization':
+            'Bearer 17|l5C3SZ184BvawddP8vXw59YvAFiy232xX12qfZPLcf8e3889',
+        'Accept': 'application/json',
+      },
+    ),
+  );
 
-  late List<Map<String, String>> alunosFiltrados;
+  List<Map<String, dynamic>> alunos = [];
+  List<Map<String, dynamic>> alunosFiltrados = [];
   final TextEditingController searchController = TextEditingController();
 
-  Map<String, String>? alunoRemovido;
+  Map<String, dynamic>? alunoRemovido;
   int? indexRemovido;
+
+  bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    alunosFiltrados = List.from(alunos);
+    buscarAlunos();
     searchController.addListener(filtrarAlunos);
+  }
+
+  Future<void> buscarAlunos() async {
+    setState(() => isLoading = true);
+    try {
+      final response = await dio.get('/alunos');
+      if (!mounted) return;
+      setState(() {
+        alunos = List<Map<String, dynamic>>.from(response.data);
+        alunosFiltrados = List.from(alunos);
+      });
+    } catch (e) {
+      print('Erro ao buscar alunos: $e');
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Erro ao carregar alunos')));
+    } finally {
+      if (mounted) setState(() => isLoading = false);
+    }
   }
 
   void filtrarAlunos() {
@@ -30,46 +59,88 @@ class _VerAlunosPageState extends State<VerAlunosPage> {
     setState(() {
       alunosFiltrados =
           alunos
-              .where((aluno) => aluno['nome']!.toLowerCase().contains(query))
+              .where(
+                (aluno) =>
+                    (aluno['nome'] as String).toLowerCase().contains(query),
+              )
               .toList();
     });
   }
 
-  void removerAluno(int index) {
-    setState(() {
-      alunoRemovido = alunos[index];
-      indexRemovido = index;
-      alunos.removeAt(index);
-      filtrarAlunos();
-    });
+  Future<void> removerAluno(int index) async {
+    final aluno = alunos[index];
+    final int id = aluno['id'];
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Aluno removido'),
-        action: SnackBarAction(
-          label: 'Desfazer',
-          onPressed: () {
-            if (alunoRemovido != null && indexRemovido != null) {
-              setState(() {
-                alunos.insert(indexRemovido!, alunoRemovido!);
-                filtrarAlunos();
-              });
-            }
-          },
+    try {
+      await dio.delete('alunos/$id');
+      if (!mounted) return;
+      setState(() {
+        alunoRemovido = aluno;
+        indexRemovido = index;
+        alunos.removeAt(index);
+        filtrarAlunos();
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Aluno removido'),
+          action: SnackBarAction(
+            label: 'Desfazer',
+            onPressed: () async {
+              if (alunoRemovido != null && indexRemovido != null) {
+                try {
+                  final response = await dio.post(
+                    'alunos',
+                    data: alunoRemovido,
+                  );
+                  if (!mounted) return;
+                  setState(() {
+                    alunos.insert(indexRemovido!, response.data);
+                    filtrarAlunos();
+                  });
+                } catch (e) {
+                  print('Erro ao desfazer remoção: $e');
+                }
+              }
+            },
+          ),
+          duration: Duration(seconds: 4),
         ),
-        duration: Duration(seconds: 4),
-      ),
-    );
+      );
+    } catch (e) {
+      print('Erro ao remover aluno: $e');
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Erro ao remover aluno')));
+    }
   }
 
-  void mostrarDetalhes(Map<String, String> aluno) {
+  String calcularIdade(String? dataNascimento) {
+    if (dataNascimento == null) return 'N/A';
+    try {
+      final nascimento = DateTime.parse(dataNascimento);
+      final hoje = DateTime.now();
+      int idade = hoje.year - nascimento.year;
+      if (hoje.month < nascimento.month ||
+          (hoje.month == nascimento.month && hoje.day < nascimento.day)) {
+        idade--;
+      }
+      return idade.toString();
+    } catch (_) {
+      return 'N/A';
+    }
+  }
+
+  void mostrarDetalhes(Map<String, dynamic> aluno) {
     showDialog(
       context: context,
       builder:
           (context) => AlertDialog(
             title: Text('Detalhes do Aluno'),
             content: Text(
-              'Nome: ${aluno['nome']}\nIdade: ${aluno['idade']}\nEmail: ${aluno['email']}',
+              'Nome: ${aluno['nome']}\n'
+              'Idade: ${calcularIdade(aluno['data_nascimento'])}\n'
+              'Email: ${aluno['email'] ?? 'N/A'}',
             ),
             actions: [
               TextButton(
@@ -81,15 +152,12 @@ class _VerAlunosPageState extends State<VerAlunosPage> {
     );
   }
 
-  void editarAluno(Map<String, String> aluno, int index) {
+  void editarAluno(Map<String, dynamic> aluno, int index) {
     TextEditingController nomeController = TextEditingController(
       text: aluno['nome'],
     );
-    TextEditingController idadeController = TextEditingController(
-      text: aluno['idade'],
-    );
     TextEditingController emailController = TextEditingController(
-      text: aluno['email'],
+      text: aluno['email'] ?? '',
     );
 
     showDialog(
@@ -103,15 +171,14 @@ class _VerAlunosPageState extends State<VerAlunosPage> {
                 TextField(
                   controller: nomeController,
                   decoration: InputDecoration(labelText: 'Nome'),
-                ),
-                TextField(
-                  controller: idadeController,
-                  decoration: InputDecoration(labelText: 'Idade'),
-                  keyboardType: TextInputType.number,
+                  keyboardType: TextInputType.name,
+                  textInputAction: TextInputAction.next,
                 ),
                 TextField(
                   controller: emailController,
                   decoration: InputDecoration(labelText: 'Email'),
+                  keyboardType: TextInputType.emailAddress,
+                  textInputAction: TextInputAction.done,
                 ),
               ],
             ),
@@ -121,19 +188,42 @@ class _VerAlunosPageState extends State<VerAlunosPage> {
                 child: Text('Cancelar'),
               ),
               ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    alunos[index] = {
-                      'nome': nomeController.text,
-                      'idade': idadeController.text,
-                      'email': emailController.text,
-                    };
-                    filtrarAlunos();
-                  });
-                  Navigator.pop(context);
-                  ScaffoldMessenger.of(
-                    context,
-                  ).showSnackBar(SnackBar(content: Text('Aluno atualizado')));
+                onPressed: () async {
+                  final nome = nomeController.text.trim();
+                  final email = emailController.text.trim();
+
+                  if (nome.isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('O nome não pode ficar vazio')),
+                    );
+                    return;
+                  }
+
+                  final int id = aluno['id'];
+                  final dataAtualizada = {'nome': nome, 'email': email};
+
+                  try {
+                    final response = await dio.put(
+                      'alunos/$id',
+                      data: dataAtualizada,
+                    );
+                    if (!mounted) return;
+                    setState(() {
+                      alunos[index] = response.data;
+                      filtrarAlunos();
+                    });
+                    Navigator.pop(context);
+                    if (!mounted) return;
+                    ScaffoldMessenger.of(
+                      context,
+                    ).showSnackBar(SnackBar(content: Text('Aluno atualizado')));
+                  } catch (e) {
+                    print('Erro ao atualizar aluno: $e');
+                    if (!mounted) return;
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Erro ao atualizar aluno')),
+                    );
+                  }
                 },
                 child: Text('Salvar'),
               ),
@@ -158,16 +248,28 @@ class _VerAlunosPageState extends State<VerAlunosPage> {
             tooltip: 'Adicionar novo aluno',
             onPressed: () async {
               final novoAluno = await Navigator.pushNamed(context, '/cadastro');
-              if (novoAluno != null && novoAluno is Map<String, String>) {
-                setState(() {
-                  alunos.add(novoAluno);
-                  filtrarAlunos();
-                });
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Aluno adicionado: ${novoAluno['nome']}'),
-                  ),
-                );
+              if (novoAluno != null && novoAluno is Map<String, dynamic>) {
+                try {
+                  final response = await dio.post('alunos', data: novoAluno);
+                  if (!mounted) return;
+                  setState(() {
+                    alunos.add(response.data);
+                    filtrarAlunos();
+                  });
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        'Aluno adicionado: ${response.data['nome']}',
+                      ),
+                    ),
+                  );
+                } catch (e) {
+                  print('Erro ao adicionar aluno: $e');
+                  if (!mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Erro ao adicionar aluno')),
+                  );
+                }
               }
             },
           ),
@@ -190,7 +292,9 @@ class _VerAlunosPageState extends State<VerAlunosPage> {
             SizedBox(height: 20),
             Expanded(
               child:
-                  alunosFiltrados.isEmpty
+                  isLoading
+                      ? Center(child: CircularProgressIndicator())
+                      : alunosFiltrados.isEmpty
                       ? Center(child: Text('Nenhum aluno encontrado'))
                       : ListView.builder(
                         itemCount: alunosFiltrados.length,
@@ -201,8 +305,10 @@ class _VerAlunosPageState extends State<VerAlunosPage> {
                           return Card(
                             child: ListTile(
                               leading: Icon(Icons.person),
-                              title: Text(aluno['nome']!),
-                              subtitle: Text('Idade: ${aluno['idade']}'),
+                              title: Text(aluno['nome']),
+                              subtitle: Text(
+                                'Idade: ${calcularIdade(aluno['data_nascimento'])}',
+                              ),
                               onTap: () => mostrarDetalhes(aluno),
                               trailing: Row(
                                 mainAxisSize: MainAxisSize.min,
